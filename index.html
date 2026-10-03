@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIKKAA'S PLANET 🪐</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap');
+
+        :root {
+            --bg-space: #090A17;
+            --electric-blue: #6E8CFF;
+            --lavender: #B8A7FF;
+            --soft-pink: #FFB6E6;
+            --chrome: #DDE3EA;
+            --white: #F6F7FB;
+
+            --font-ui: 'VT323', monospace;
+            --font-text: 'Space Mono', monospace;
+
+            --px: 0px;
+            --py: 0px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-space);
+            color: var(--white);
+            font-family: var(--font-text);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            cursor: crosshair;
+        }
+
+        /* BACKGROUND */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0, 0, 0, 0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: moveStars 100s linear infinite;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        @keyframes moveStars {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-200px);
+            }
+        }
+
+        .bg-planet {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .planet-small-1 {
+            width: 80px;
+            height: 80px;
+            top: 15%;
+            left: 10%;
+            background: linear-gradient(135deg, var(--bg-space), var(--lavender));
+            animation: floatBg 12s infinite alternate ease-in-out;
+        }
+
+        .planet-small-2 {
+            width: 40px;
+            height: 40px;
+            bottom: 20%;
+            right: 15%;
+            background: linear-gradient(45deg, var(--soft-pink), #000);
+            animation: floatBg 9s infinite alternate-reverse ease-in-out;
+            box-shadow: 0 0 10px var(--soft-pink);
+        }
+
+        @keyframes floatBg {
+            0% {
+                transform: translateY(0px);
+            }
+
+            100% {
+                transform: translateY(30px);
+            }
+        }
+
+        .ambient-ship {
+            position: absolute;
+            top: 25%;
+            left: -100px;
+            font-size: 1.5rem;
+            animation: flyAcross 30s linear infinite;
+            z-index: 2;
+            opacity: 0.4;
+        }
+
+        @keyframes flyAcross {
+            0% {
+                transform: translateX(-100px) translateY(0);
+            }
+
+            50% {
+                transform: translateX(50vw) translateY(50px);
+            }
+
+            100% {
+                transform: translateX(110vw) translateY(-20px);
+            }
+        }
+
+        /*  SECTIONS LAYOUT  */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        .active-screen {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .zoomed-out {
+            transform: scale(1.5);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /*  1. LANDING SCREEN  */
+        #landing-screen {
+            background-color: var(--bg-space);
+            z-index: 9999;
+        }
+
+        .landing-box {
+            border: 2px solid var(--electric-blue);
+            padding: 30px;
+            text-align: center;
+            background: rgba(110, 140, 255, 0.1);
+            backdrop-filter: blur(5px);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .landing-box h1 {
+            font-family: var(--font-ui);
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--soft-pink);
+            text-shadow: 0 0 15px rgba(255, 182, 230, 0.5);
+        }
+
+        .btn-y2k {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--lavender);
+            padding: 10px 20px;
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-y2k:hover {
+            background: var(--lavender);
+            color: var(--bg-space);
+        }
+
+        #loading-ui {
+            display: none;
+            margin-top: 20px;
+            font-family: var(--font-ui);
+            color: var(--electric-blue);
+            font-size: 1.2rem;
+        }
+
+        /*  2. PLANET MAP  */
+        .map-center {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(1);
+        }
+        .planet-system-wrapper {
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: translate(var(--px), var(--py));
+            transition: transform 0.1s linear;
+        }
+
+        .planet-sphere {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fce4ff 0%, #c4a1ff 40%, #5d4a82 80%, #161122 100%);
+            box-shadow: 0 0 40px rgba(196, 161, 255, 0.4), inset -20px -20px 40px rgba(0, 0, 0, 0.8), inset 10px 10px 20px rgba(255, 255, 255, 0.2);
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .planet-title {
+            font-family: var(--font-ui);
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 10px var(--electric-blue), 0 0 20px var(--lavender), 0 0 30px var(--soft-pink);
+            letter-spacing: 5px;
+            pointer-events: none;
+            transform: rotateX(15deg) rotateY(-10deg);
+        }
+
+        .ring-wrapper {
+            position: absolute;
+            width: 550px;
+            height: 160px;
+            transform: rotate(-15deg);
+        }
+
+        .ring-back {
+            z-index: 4;
+            clip-path: polygon(-20% -20%, 120% -20%, 120% 50%, -20% 50%);
+        }
+
+        .ring-front {
+            z-index: 6;
+            clip-path: polygon(-20% 50%, 120% 50%, 120% 120%, -20% 120%);
+        }
+
+        .ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid rgba(74, 114, 255, 0.4);
+            box-shadow: 0 0 25px rgba(74, 114, 255, 0.9), inset 0 0 25px rgba(74, 114, 255, 0.9);
+            position: absolute;
+        }
+
+        .map-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease-out;
+        }
+
+        .map-node:hover {
+            transform: translateY(-8px);
+        }
+
+        .map-icon {
+            font-size: 4rem; /
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); 
+        }
+
+        .map-label {
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            background: rgba(9, 10, 23, 0.7);
+            padding: 4px 10px;
+            border: 1px solid var(--electric-blue);
+            color: var(--white);
+            box-shadow: 0 0 8px rgba(110, 140, 255, 0.3);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+       #node-contact {
+            top: -50px; 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #node-contact:hover {
+            transform: translateX(-50%) translateY(-8px);
+        }
+
+        #node-sample {
+            top: 50%;
+            left: -60px; 
+            margin-top: -35px;
+        }
+
+        #node-price {
+            top: 50%;
+            right: -50px; 
+            margin-top: -35px;
+        }
+
+        #node-tos {
+            bottom: -50px; 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #node-tos:hover {
+            transform: translateX(-50%) translateY(-8px);
+        }
+
+        /*  ZONE TEMPLATES  */
+        .zone-container {
+            width: 85%;
+            height: 85%;
+            max-width: 1200px;
+            border: 2px solid var(--lavender);
+            background: rgba(9, 10, 23, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .zone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--electric-blue);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .zone-title {
+            font-family: var(--font-ui);
+            font-size: 2rem;
+            color: var(--soft-pink);
+        }
+
+        .btn-return {
+            background: var(--electric-blue);
+            color: #000;
+            border: none;
+            padding: 5px 15px;
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-return:hover {
+            background: var(--white);
+        }
+
+        /*  3. CONTACT ZONE  */
+        .contact-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 30px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .contact-avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 3px solid var(--soft-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 182, 230, 0.1);
+            box-shadow: 0 0 20px rgba(255, 182, 230, 0.3);
+            flex-shrink: 0;
+        }
+
+        .face {
+            display: flex;
+            gap: 15px;
+        }
+
+        .eye {
+            width: 40px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #000;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .pupil {
+            width: 18px;
+            height: 18px;
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .contact-info h3 {
+            color: var(--electric-blue);
+            margin-bottom: 15px;
+            font-family: var(--font-ui);
+            font-size: 2.5rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: var(--chrome);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--lavender);
+            color: var(--white);
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .social-btn:hover {
+            background: var(--lavender);
+            color: var(--bg-space);
+            transform: translateY(-3px);
+        }
+
+        /*  4. ART GALLERY (CAROUSEL SLIDER)  */
+        .art-carousel-wrapper {
+            position: relative;
+            flex-grow: 1; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--lavender);
+        }
+        
+        .carousel-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .art-slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .art-slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .art-slide img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain; 
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(9, 10, 23, 0.8);
+            color: var(--white);
+            border: 2px solid var(--lavender);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.2s;
+        }
+        
+        .carousel-btn:hover {
+            background: var(--electric-blue);
+            border-color: var(--white);
+            box-shadow: 0 0 15px var(--electric-blue);
+        }
+        
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
+        
+        .slide-counter {
+            position: absolute;
+            bottom: 15px;
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--electric-blue);
+            color: var(--lavender);
+            z-index: 10;
+        }
+
+        /* 5. PRICES */
+        .price-wrapper {
+             overflow-y: auto;
+             height: 100%;
+             padding-right: 5px;
+        }
+
+        .price-station {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .price-card {
+            border: 1px solid var(--electric-blue);
+            flex: 1;
+            padding: 20px 10px;
+            text-align: center;
+            background: rgba(110, 140, 255, 0.05);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .price-card:hover {
+            background: rgba(110, 140, 255, 0.15);
+            border-color: var(--white);
+            transform: translateY(-5px);
+        }
+
+        .price-card h3 {
+            color: var(--soft-pink);
+            font-family: var(--font-ui);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .price-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+        }
+
+        .extra-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(110, 140, 255, 0.05);
+            border: 1px solid var(--lavender);
+        }
+
+        .extra-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            list-style: none;
+            font-size: 0.95rem;
+            color: var(--chrome);
+        }
+
+        .highlight {
+            color: var(--electric-blue);
+            font-weight: bold;
+        }
+
+        /*6. TOS*/
+        .archive-content {
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--chrome);
+        }
+
+        .archive-content h3 {
+            color: var(--lavender);
+            margin: 20px 0 10px 0;
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            border-bottom: 1px dashed var(--lavender);
+        }
+
+        .archive-content strong {
+            color: var(--soft-pink);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--lavender);
+            border-radius: 10px;
+        }
+
+        /* NAVIGATION CONSOLE */
+        #nav-console-wrapper {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            display: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .toggle-nav-btn {
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--electric-blue);
+            border: 1px solid var(--chrome);
+            padding: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .toggle-nav-btn:hover {
+            color: var(--soft-pink);
+            border-color: var(--soft-pink);
+        }
+
+        #nav-console {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 1px solid var(--chrome);
+            display: block; /* Mặc định hiển thị trên PC */
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        #nav-console.collapsed {
+            display: none;
+        }
+
+        .nav-title {
+            font-family: var(--font-ui);
+            color: var(--electric-blue);
+            border-bottom: 1px solid var(--chrome);
+            margin-bottom: 10px;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            padding: 5px 0;
+            font-size: 0.9rem;
+            color: var(--chrome);
+            transition: 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--soft-pink);
+            padding-left: 5px;
+        }
+
+        .nav-item::before {
+            content: "○ ";
+        }
+
+        .nav-item.active::before {
+            content: "◉ ";
+            color: var(--soft-pink);
+        }
+
+        /* RESPONSIVE TABLET VÀ ĐIỆN THOẠI */
+        @media (max-width: 1024px) {
+            .zone-container {
+                width: 90%; 
+                height: 90%;
+            }
+            .map-center {
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .zone-container {
+                width: 95%; 
+                height: 90%;
+                padding: 15px; 
+            }
+
+            .zone-title {
+                font-size: 1.5rem; 
+            }
+
+            .btn-return {
+                font-size: 1rem;
+                padding: 5px 10px;
+            }
+
+            .landing-box h1 {
+                font-size: 2rem; 
+            }
+
+            .map-center {
+                transform: scale(0.65);
+            }
+            
+            #node-contact { top: 0px; }
+            #node-tos { bottom: 0px; }
+            #node-sample { left: 0px; }
+            #node-price { right: 10px; }
+
+            /* Contact */
+            .contact-avatar {
+                width: 120px;
+                height: 120px;
+            }
+            .eye { width: 30px; height: 45px;}
+            .pupil { width: 14px; height: 14px;}
+            .contact-info h3 { font-size: 2rem; }
+
+            /* Price Station chuyển từ xếp ngang sang xếp dọc trên đt */
+            .price-station {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .price-card {
+                padding: 10px;
+            }
+            .price-card h3 {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+            }
+            .price-val {
+                font-size: 1.2rem;
+            }
+            
+            .extra-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .carousel-btn {
+                width: 40px; height: 40px;
+                font-size: 1.2rem;
+            }
+            .prev-btn { left: 10px; }
+            .next-btn { right: 10px; }
+
+            /* Ẩn navigation console mặc định trên đt */
+            #nav-console {
+                display: none;
+            }
+            #nav-console.collapsed {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BACKGROUND ELEMENTS -->
+    <div class="stars"></div>
+    <div class="bg-planet planet-small-1"></div>
+    <div class="bg-planet planet-small-2"></div>
+    <div class="ambient-ship">🚀</div>
+
+    <!-- 1. LANDING SCREEN -->
+    <div id="landing-screen" class="screen active-screen">
+        <div class="landing-box">
+            <h1>RIKKAA'S PLANET</h1>
+            <p>Welcome, Traveler.</p>
+            <button class="btn-y2k" id="btn-land" onclick="startLanding()">[ LAND HERE ]</button>
+            <div id="loading-ui">
+                ENTERING ATMOSPHERE...<br>
+                <span id="load-bar">[░░░░░░░░░░░░░░░] 0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PLANET MAP -->
+    <div id="planet-map" class="screen hidden">
+        <div class="map-center">
+
+            <div class="planet-system-wrapper">
+                <div class="ring-wrapper ring-back">
+                    <div class="ring"></div>
+                </div>
+                <div class="planet-sphere">
+                    <div class="planet-title">RIKKAA</div>
+                </div>
+                <div class="ring-wrapper ring-front">
+                    <div class="ring"></div>
+                </div>
+            </div>
+
+            <div class="map-node" id="node-contact" onclick="openZone('zone-contact')">
+                <div class="map-icon">♡</div>
+                <div class="map-label">CONTACT</div>
+            </div>
+            <div class="map-node" id="node-sample" onclick="openZone('zone-sample')">
+                <div class="map-icon">✧</div>
+                <div class="map-label">SAMPLE</div>
+            </div>
+            <div class="map-node" id="node-price" onclick="openZone('zone-price')">
+                <div class="map-icon">✯</div>
+                <div class="map-label">PRICES</div>
+            </div>
+            <div class="map-node" id="node-tos" onclick="openZone('zone-tos')">
+                <div class="map-icon">☾</div>
+                <div class="map-label">TOS</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 3. ZONE: CONTACT -->
+    <div id="zone-contact" class="screen hidden zoomed-out">
+        <div class="zone-container">
+            <div class="zone-header">
+                <span class="zone-title">✦ CONTACT</span>
+                <button class="btn-return" onclick="returnToPlanet()">↩ RETURN TO PLANET</button>
+            </div>
+            <div class="contact-layout">
+                <div class="contact-avatar">
+                    <div class="face">
+                        <div class="eye">
+                            <div class="pupil"></div>
+                        </div>
+                        <div class="eye">
+                            <div class="pupil"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <h3>LINH ANH</h3>
+                    <div class="social-links">
+                        <button class="social-btn"
+                            onclick="window.open('https://www.facebook.com/share/1Gm8viQryi/?mibextid=wwXIfr')">
+                            FACEBOOK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ZONE: SAMPLES -->
+    <div id="zone-sample" class="screen hidden zoomed-out">
+        <div class="zone-container">
+            <div class="zone-header">
+                <span class="zone-title">✦  SAMPLE</span>
+                <button class="btn-return" onclick="returnToPlanet()">↩ RETURN TO PLANET</button>
+            </div>
+
+            <div class="art-carousel-wrapper">
+                <!-- Nút trái -->
+                <button class="carousel-btn prev-btn" onclick="prevSlide()">&#10094;</button>
+                
+                <!-- SAMPLE -->
+                <div class="carousel-track">
+                    <div class="art-slide"><img src="6.jpg" alt="Art 6"></div>
+                    <div class="art-slide"><img src="7.jpg" alt="Art 7"></div>
+                    <div class="art-slide"><img src="8.jpg" alt="Art 8"></div>
+                    <div class="art-slide"><img src="9.jpg" alt="Art 9"></div>
+                    <div class="art-slide"><img src="1.jpg" alt="Art 1"></div>
+                    <div class="art-slide"><img src="2.jpg" alt="Art 2"></div>
+                    <div class="art-slide"><img src="3.jpg" alt="Art 3"></div>
+                    <div class="art-slide"><img src="4.jpg" alt="Art 4"></div>
+                    <div class="art-slide"><img src="5.jpg" alt="Art 5"></div>
+                </div>
+                
+                <!-- Nút phải -->
+                <button class="carousel-btn next-btn" onclick="nextSlide()">&#10095;</button>
+                
+                <!-- Số thứ tự -->
+                <div class="slide-counter" id="slide-counter">1 / 9</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. ZONE: PRICE LIST -->
+    <div id="zone-price" class="screen hidden zoomed-out">
+        <div class="zone-container">
+            <div class="zone-header">
+                <span class="zone-title">✦ COMMISSION STATION</span>
+                <button class="btn-return" onclick="returnToPlanet()">↩ RETURN TO PLANET</button>
+            </div>
+
+            <div class="price-wrapper">
+                <div class="price-station">
+                    <div class="price-card">
+                        <h3>BUST UP</h3>
+                        <div class="price-val">380k</div>
+                    </div>
+                    <div class="price-card">
+                        <h3>HALF BODY</h3>
+                        <div class="price-val">460k</div>
+                    </div>
+                    <div class="price-card">
+                        <h3>KNEE UP</h3>
+                        <div class="price-val">540k</div>
+                    </div>
+                </div>
+
+                <div class="extra-box">
+                    <h3
+                        style="color: var(--electric-blue); font-family: var(--font-ui); font-size: 1.5rem; margin-bottom: 10px;">
+                        ✦ PHỤ PHÍ (ADD-ONS) ✦</h3>
+                    <ul class="extra-grid">
+                        <li>• Background đơn giản: <span class="highlight">Free</span></li>
+                        <li>• Background phức tạp: <span class="highlight">40k up</span></li>
+                        <li>• Char nhiều detail: <span class="highlight">+40k up</span></li>
+                        <li>• Thêm char: <span class="highlight">+100%</span></li>
+                        <li>• Comm thương mại: <span class="highlight">x3</span></li>
+                        <li>• Comm private: <span class="highlight">+50% comm</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. ZONE: TOS -->
+    <div id="zone-tos" class="screen hidden zoomed-out">
+        <div class="zone-container">
+            <div class="zone-header">
+                <span class="zone-title">✦ TERMS OF SERVICE (T.O.S)</span>
+                <button class="btn-return" onclick="returnToPlanet()">↩ RETURN TO PLANET</button>
+            </div>
+            <div class="archive-content">
+                <h3>01. DEADLINE & PAYMENT</h3>
+                <p>• <strong>Deadline:</strong> 2 - 5 tuần.</p>
+                <p>• <strong>Payment:</strong> Chuyển khoản. Cọc 50-100% sau khi chốt sketch.</p>
+
+                <h3>02. QUYỀN ARTIST</h3>
+                <p>• Artist có quyền từ chối comm quá khả năng.</p>
+                <p>• Tranh comm artist có thể dùng làm sample, portfolio, đăng trên các tài khoản mạng xã hội.</p>
+
+                <h3>03. CHỈNH SỬA</h3>
+                <p>• Sửa tranh >3 lần tính phí <strong>20k/lần</strong> (nếu không phải lỗi artist).</p>
+                <p>• <strong>Giai đoạn Sketch:</strong> Các thay đổi lớn như pose, outfit, hairstyle sẽ phát sinh phụ
+                    phí.</p>
+                <p>• <strong>Giai đoạn Render:</strong> Chỉ hỗ trợ chỉnh các lỗi nhỏ.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION CONSOLE & TOGGLE BUTTON -->
+    <div id="nav-console-wrapper">
+        <button class="toggle-nav-btn" onclick="toggleNav()">☰</button>
+        <div id="nav-console">
+            <div class="nav-title">DESTINATION</div>
+            <ul class="nav-list">
+                <li class="nav-item active" id="nav-planet" onclick="returnToPlanet()">PLANET MAP</li>
+                <li class="nav-item" id="nav-contact" onclick="openZone('zone-contact')">CONTACT</li>
+                <li class="nav-item" id="nav-sample" onclick="openZone('zone-sample')">SAMPLE</li>
+                <li class="nav-item" id="nav-price" onclick="openZone('zone-price')">PRICES</li>
+                <li class="nav-item" id="nav-tos" onclick="openZone('zone-tos')">T.O.S</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // STATE MANAGEMENT
+        let currentScreen = 'landing-screen';
+        const totalBars = 15;
+
+        // FAST LANDING
+        function startLanding() {
+            document.getElementById('btn-land').style.display = 'none';
+            document.getElementById('loading-ui').style.display = 'block';
+
+            let progress = 0;
+            const barElem = document.getElementById('load-bar');
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 20) + 15;
+                if (progress >= 100) progress = 100;
+
+                const filled = Math.floor((progress / 100) * totalBars);
+                const empty = totalBars - filled;
+                barElem.innerText = `[${'█'.repeat(filled)}${'░'.repeat(empty)}] ${progress}%`;
+
+                if (progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(enterPlanet, 200);
+                }
+            }, 40);
+        }
+
+        function enterPlanet() {
+            switchScreen('landing-screen', 'planet-map');
+            document.getElementById('nav-console-wrapper').style.display = 'flex';
+            
+            // Tự động thu gọn menu trên thiết bị di động
+            if (window.innerWidth <= 768) {
+                document.getElementById('nav-console').classList.remove('collapsed');
+            }
+        }
+
+        // TOGGLE NAVIGATION CONSOLE
+        function toggleNav() {
+            const navConsole = document.getElementById('nav-console');
+            navConsole.classList.toggle('collapsed');
+        }
+
+        // PARALLAX
+        document.addEventListener('mousemove', (e) => {
+            if (currentScreen === 'planet-map') {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+                document.documentElement.style.setProperty('--px', `${xAxis}px`);
+                document.documentElement.style.setProperty('--py', `${yAxis}px`);
+            }
+
+            if (currentScreen === 'zone-contact') {
+                const pupils = document.querySelectorAll('.pupil');
+                pupils.forEach(pupil => {
+                    const eye = pupil.parentElement;
+                    const rect = eye.getBoundingClientRect();
+                    const x = rect.left + rect.width / 2;
+                    const y = rect.top + rect.height / 2;
+                    const deltaX = e.clientX - x;
+                    const deltaY = e.clientY - y;
+                    const angle = Math.atan2(deltaY, deltaX);
+
+                    const maxDist = (rect.width / 2) - (pupil.offsetWidth / 2) - 2;
+                    const distance = Math.min(maxDist, Math.hypot(deltaX, deltaY) / 10);
+
+                    pupil.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+                });
+            }
+        });
+
+        // SCREEN TRANSITIONS 
+        function switchScreen(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+
+            if (hideEl) {
+                hideEl.classList.remove('active-screen');
+                hideEl.classList.add('hidden');
+                if (hideId !== 'planet-map' && hideId !== 'landing-screen') hideEl.classList.add('zoomed-out');
+            }
+            if (showEl) {
+                showEl.classList.remove('hidden');
+                showEl.classList.remove('zoomed-out');
+                showEl.classList.add('active-screen');
+            }
+            currentScreen = showId;
+            updateNavConsole(showId);
+        }
+
+        function openZone(zoneId) {
+            if (currentScreen === zoneId) return;
+            const map = document.getElementById('planet-map');
+            map.classList.remove('active-screen'); map.classList.add('hidden');
+
+            if (currentScreen !== 'planet-map' && currentScreen !== 'landing-screen') {
+                const oldZone = document.getElementById(currentScreen);
+                oldZone.classList.remove('active-screen'); oldZone.classList.add('hidden'); oldZone.classList.add('zoomed-out');
+            }
+            const zone = document.getElementById(zoneId);
+            zone.classList.remove('hidden'); zone.classList.remove('zoomed-out'); zone.classList.add('active-screen');
+            currentScreen = zoneId; updateNavConsole(zoneId);
+
+            // Thu gọn menu sau khi chọn trên mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById('nav-console').classList.remove('collapsed');
+            }
+        }
+
+        function returnToPlanet() {
+            if (currentScreen === 'planet-map') return;
+            switchScreen(currentScreen, 'planet-map');
+            
+            // Thu gọn menu sau khi trở về map trên mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById('nav-console').classList.remove('collapsed');
+            }
+        }
+
+        function updateNavConsole(activeId) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (activeId === 'planet-map') document.getElementById('nav-planet').classList.add('active');
+            if (activeId === 'zone-contact') document.getElementById('nav-contact').classList.add('active');
+            if (activeId === 'zone-sample') document.getElementById('nav-sample').classList.add('active');
+            if (activeId === 'zone-price') document.getElementById('nav-price').classList.add('active');
+            if (activeId === 'zone-tos') document.getElementById('nav-tos').classList.add('active');
+        }
+
+        // CAROUSEL LOGIC 
+        let currentSlide = 0;
+        let slides = [];
+        let counterEl;
+
+        function initCarousel() {
+            slides = document.querySelectorAll('.art-slide');
+            counterEl = document.getElementById('slide-counter');
+            if(slides.length > 0) {
+                updateSlide();
+            }
+        }
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            if(counterEl) {
+                counterEl.innerText = `${currentSlide + 1} / ${slides.length}`;
+            }
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlide();
+        }
+
+        window.addEventListener('DOMContentLoaded', initCarousel);
+
+    </script>
+</body>
+
+</html>
